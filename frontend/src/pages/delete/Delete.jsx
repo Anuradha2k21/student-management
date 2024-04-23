@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./delete.css";
 import Message from "../../components/message/Message";
 import Header from "../../components/header/Header";
+import DOMPurify from 'dompurify';
 
 export default function Delete() {
   // For navigation during button click
@@ -18,7 +19,7 @@ export default function Delete() {
     lastName: "",
     course: "",
     address: "",
-    rfidBadgeNumber: "",
+    badgeNumber: "",
     imagePic: "",
   });
 
@@ -62,7 +63,7 @@ export default function Delete() {
       lastName: "",
       course: "",
       address: "",
-      rfidBadgeNumber: "",
+      badgeNumber: "",
       imagePic: "",
     });
   };
@@ -81,8 +82,8 @@ export default function Delete() {
               <img
                 src={
                   student.imagePic
-                    ? `http://localhost:5000/${student.imagePic}`
-                    : "http://localhost:5000/images/defaultPic.png"
+                  ? `http://localhost:5000/${DOMPurify.sanitize(student.imagePic)}`
+                  : "http://localhost:5000/images/defaultPic.png"
                 }
                 alt="Profile Pic"
               />
@@ -154,14 +155,14 @@ export default function Delete() {
                 />
               </div>
               <div className="fieldRow">
-                <label htmlFor="rfidBadgeNumber" className="fieldLabel">
-                  RFID Badge Number
+                <label htmlFor="badgeNumber" className="fieldLabel">
+                  Badge Number
                 </label>
                 <input
                   type="text"
-                  name="rfidBadgeNumber"
-                  id="rfidBadgeNumber"
-                  value={student.rfidBadgeNumber}
+                  name="badgeNumber"
+                  id="badgeNumber"
+                  value={student.badgeNumber}
                   readOnly={true}
                   className="deleteInputs"
                 />

@@ -4,22 +4,21 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../components/header/Header";
 import Message from "../../components/message/Message";
 import "./add.css";
+import DOMPurify from 'dompurify';
 
 export default function Add() {
-  // For navigation during button click
   const navigate = useNavigate();
-  // State object of our student
+
   const [student, setStudent] = useState({
     studentId: "",
     firstName: "",
     lastName: "",
     course: "",
     address: "",
-    rfidBadgeNumber: "",
+    badgeNumber: "",
     imagePic: "",
   });
 
-  // represents the profile picture uploaded
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState({
     show: false,
@@ -27,7 +26,6 @@ export default function Add() {
     type: "",
   });
 
-  // Used for updating our state object
   const updateStudent = (e) => {
     const fieldName = e.target.name;
     setStudent((currentStudent) => ({
@@ -36,33 +34,102 @@ export default function Add() {
     }));
   };
 
-  // Show info or error message during calling of the Axios REST API
   const showMessage = (show = false, type = "", msg = "") => {
     setMessage({ show, type, msg });
   };
 
-  // Handle form submit and using FormData API
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!student.studentId.trim()) {
+      alert("Student ID is required!");
+      return;
+    }
+    if (!/^ST\d{3}$/.test(student.studentId.trim())) {
+      alert('Student ID must start with "ST" followed by 3 digits (000 to 999)');
+      return;
+    }
+
+    if (!student.firstName.trim()) {
+      alert("First Name is required!");
+      return;
+    }
+    
+    if (!/^[a-zA-Z\s]*$/.test(student.firstName.trim())) {
+      alert("First Name can only contain letters and spaces!");
+      return;
+    }
+
+    if (!student.lastName.trim()) {
+      alert("Last Name is required!");
+      return;
+    }
+
+
+    if (!/^[a-zA-Z\s]*$/.test(student.lastName.trim())) {
+      alert("Last Name can only contain letters and spaces!");
+      return;
+    }
+
+    if (!student.course.trim()) {
+      alert("Course name is required!");
+      return;
+    }
+
+    if (!student.address.trim()) {
+      alert("Address is required!");
+      return;
+    }
+
+    if (!student.badgeNumber.trim()) {
+      alert("Badge ID is required!");
+      return;
+    }
+
+    if (!/^BCH\d{2}$/.test(student.badgeNumber.trim())) {
+      alert("Badge ID must start with \"BCH\" followed by two digits (00 to 99)");
+      return;
+    }
+
+    if (!file) {
+      alert("Profile picture is required!");
+      return;
+    }
+
     const studenData = new FormData();
     studenData.append("studentId", student.studentId);
     studenData.append("firstName", student.firstName);
     studenData.append("lastName", student.lastName);
     studenData.append("course", student.course);
     studenData.append("address", student.address);
-    studenData.append("rfidBadgeNumber", student.rfidBadgeNumber);
+    studenData.append("badgeNumber", student.badgeNumber);
     if (file) {
       studenData.append("file", file);
     }
+
     try {
-      await axios.post("http://localhost:5000/api/students", studenData);
+      console.log("Sending request with data:", student, file);
+      const response = await axios.post("http://localhost:5000/api/students", studenData);
+      console.log("Response:", response.data);
       showMessage(true, "info", "Successfully added student information");
+
+      setStudent({
+        studentId: "",
+        firstName: "",
+        lastName: "",
+        course: "",
+        address: "",
+        badgeNumber: "",
+      });
+      setFile(null);
+      navigate(-1);
+
     } catch (error) {
-      showMessage(true, "error", error);
+      console.error("Error:", error);
+      showMessage(true, "error", error.message || "An error occurred while adding student information");
     }
   };
 
-  // Displays the form for Adding
   return (
     <>
       <Header />
@@ -73,7 +140,7 @@ export default function Add() {
         <form className="editForm" onSubmit={handleSubmit}>
           <div className="fields">
             <div className="imgColumn">
-              <img
+              <img 
                 src={
                   file
                     ? URL.createObjectURL(file)
@@ -160,14 +227,14 @@ export default function Add() {
                 />
               </div>
               <div className="fieldRow">
-                <label htmlFor="rfidBadgeNumber" className="fieldLabel">
-                  RFID Badge Number
+                <label htmlFor="badgeNumber" className="fieldLabel">
+                  Badge ID
                 </label>
                 <input
                   type="text"
-                  name="rfidBadgeNumber"
-                  id="rfidBadgeNumber"
-                  value={student.rfidBadgeNumber}
+                  name="badgeNumber"
+                  id="badgeNumber"
+                  value={student.badgeNumber}
                   onChange={updateStudent}
                   className="addInputs"
                 />

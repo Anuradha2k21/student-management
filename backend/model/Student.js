@@ -11,7 +11,7 @@ const StudentSchema = new mongoose.Schema(
     lastName: String,
     course: String,
     address: String,
-    rfidBadgeNumber: {
+    badgeNumber: {
       type: String,
       unique: true,
       sparse: true,

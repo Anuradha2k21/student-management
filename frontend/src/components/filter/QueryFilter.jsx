@@ -4,16 +4,16 @@ import { useNavigate } from "react-router-dom";
 import "./queryfilter.css";
 
 export default function QueryFilter({ searchStudent, getStudents }) {
-  // State information for the filter by StudentId or RFID or both
+  // State information for the filter by StudentId or badgeNumber or both
   const [studentId, setStudentId] = useState("");
-  const [rfid, setRfId] = useState("");
+  const [badgeNumber, setbadgeNumber] = useState("");
   // For page navigation during button click
   const navigate = useNavigate();
 
   // Clear the input text
   const clearSearch = () => {
     setStudentId("");
-    setRfId("");
+    setbadgeNumber("");
     getStudents();
   };
 
@@ -26,6 +26,7 @@ export default function QueryFilter({ searchStudent, getStudents }) {
         </label>
         <input
           name="studentId"
+          id="studentId"
           className="filterInputs"
           type="text"
           placeholder="Enter Student ID"
@@ -34,16 +35,17 @@ export default function QueryFilter({ searchStudent, getStudents }) {
         />
       </div>
       <div className="filterFields">
-        <label htmlFor="rfid" className="filterLabel">
-          RFID Number
+        <label htmlFor="batchId" className="filterLabel">
+        Badge ID
         </label>
         <input
-          name="rfid"
+          name="batchId"
+          id="batchId"
           className="filterInputs"
           type="text"
-          placeholder="Enter RFID"
-          value={rfid}
-          onChange={(e) => setRfId(e.target.value)}
+          placeholder="Enter Badge ID"
+          value={badgeNumber}
+          onChange={(e) => setbadgeNumber(e.target.value)}
         />
       </div>
       <div className="filterFields">
@@ -51,7 +53,7 @@ export default function QueryFilter({ searchStudent, getStudents }) {
           <button
             type="button"
             className="queryBtn"
-            onClick={() => searchStudent(studentId, rfid)}
+            onClick={() => searchStudent(studentId, badgeNumber)}
           >
             Search Student
           </button>
@@ -65,6 +67,30 @@ export default function QueryFilter({ searchStudent, getStudents }) {
           >
             Add Student
           </button>
+
+          <button
+            type="button"
+            className="queryBtn"
+            onClick={() => {
+              fetch('http://localhost:3000/logout', {
+                method: 'POST', // or 'GET', depending on your API
+                credentials: 'include', // to include cookies if your API uses them
+              })
+                .then(response => {
+                  if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                  }
+                  // navigate to the login page after successful logout
+                  window.location.href = 'http://localhost:3000/login';
+                })
+                .catch(error => {
+                  console.error('There has been a problem with your fetch operation:', error);
+                });
+            }}
+          >
+            Sign Out
+          </button>
+
         </div>
       </div>
     </div>

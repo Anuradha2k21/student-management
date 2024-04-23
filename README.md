@@ -1,20 +1,20 @@
-# rfid-security-app
-## A Student RFID Management System using MERN stack (MongoDB-Express-React-Node)  
+# badgeNumber-security-app
+## A Student badgeNumber Management System using MERN stack (MongoDB-Express-React-Node)  
 
-![alt text](https://user-images.githubusercontent.com/69466026/198886526-62aa9cf4-9613-4391-80c1-e00f466aeacf.PNG "RFID Security Application")
+![alt text](https://user-images.githubusercontent.com/69466026/198886526-62aa9cf4-9613-4391-80c1-e00f466aeacf.PNG "badgeNumber Security Application")
 
-### For writeup of the project then please look [MERN Stack Tutorial – RFID Management System](https://www.donskytech.com/mern-stack-tutorial-rfid-management-system/)    
+### For writeup of the project then please look [MERN Stack Tutorial – badgeNumber Management System](https://www.donskytech.com/mern-stack-tutorial-badgeNumber-management-system/)    
 
 ### To install and run the project then do the following steps:  
 You should have installed Node.js in your workstation first and setup your own MongoDB Atlas database cluster.
 
 ### To run the backend application:  
 1. Open a new terminal
-2. ```git clone https://github.com/donskytech/rfid-security-app.git```  
-3. ```cd rfid-security-app```  
+2. ```git clone https://github.com/donskytech/badgeNumber-security-app.git```  
+3. ```cd badgeNumber-security-app```  
 4. ```cd backend```  
 5. Create a .env file and enter your MongoDB Atlas connection string.  
-Format is the following: ```MONGO_DB_URL=mongodb+srv://<username>:<password>@<server>/rfiddb?retryWrites=true&w=majority```
+Format is the following: ```MONGO_DB_URL=mongodb+srv://<username>:<password>@<server>/badgeNumberdb?retryWrites=true&w=majority```
 6. ```npm install && npm start```  
 7. Type localhost:5000 in your browser and check if you would see "Cannot GET /".  If you see this message then it means that you were able to run the backend server.  
 

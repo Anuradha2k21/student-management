@@ -18,7 +18,7 @@ export default function Edit() {
     lastName: "",
     course: "",
     address: "",
-    rfidBadgeNumber: "",
+    badgeNumber: "",
     imagePic: "",
   });
   // The profile picture file
@@ -62,7 +62,7 @@ export default function Edit() {
     studenData.append("lastName", student.lastName);
     studenData.append("course", student.course);
     studenData.append("address", student.address);
-    studenData.append("rfidBadgeNumber", student.rfidBadgeNumber);
+    studenData.append("badgeNumber", student.badgeNumber);
     if (file) {
       studenData.append("file", file);
     }
@@ -176,14 +176,14 @@ export default function Edit() {
                 />
               </div>
               <div className="fieldRow">
-                <label htmlFor="rfidBadgeNumber" className="fieldLabel">
-                  RFID Badge Number
+                <label htmlFor="badgeNumber" className="fieldLabel">
+                  Badge ID
                 </label>
                 <input
                   type="text"
-                  name="rfidBadgeNumber"
-                  id="rfidBadgeNumber"
-                  value={student.rfidBadgeNumber}
+                  name="badgeNumber"
+                  id="badgeNumber"
+                  value={student.badgeNumber}
                   onChange={updateStudent}
                   className="editInputs"
                 />
@@ -193,7 +193,7 @@ export default function Edit() {
 
           <div className="btnContainer">
             <button type="submit" className="bottomButton">
-              Edit
+              Update
             </button>
             <button
               type="button"

@@ -33,10 +33,10 @@ export default function Cards({ students }) {
                   <span className="info">{student.course}</span>
                 </p>
                 <p>
-                  <span className="label">RFID Number:</span>
+                  <span className="label">Badge ID:</span>
                 </p>
                 <p>
-                  <span className="info">{student.rfidBadgeNumber}</span>
+                  <span className="info">{student.badgeNumber}</span>
                 </p>
               </div>
               <div className="btnContainer">

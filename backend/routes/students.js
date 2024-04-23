@@ -4,9 +4,16 @@ const multer = require("multer");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const fs = require("fs");
+const { body, validationResult } = require('express-validator');
+const rateLimit = require('express-rate-limit');
 
 // Upload profile image directory
 const IMAGE_DIR = "./images/";
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20 // limit each IP to 100 requests per windowMs
+});
 
 // set multer disk storage
 const storage = multer.diskStorage({
@@ -37,37 +44,72 @@ const upload = multer({
   },
 });
 
+// Set X-XSS-Protection header
+router.use((req, res, next) => {
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  next();
+});
+
 // Create Student
-router.post("/", upload.single("file"), async (req, res) => {
-  const newStudent = new Student(req.body);
+router.post("/", upload.single("file"), [
+  body('studentId').trim().isAlphanumeric().escape(),
+  body('firstName').trim().isLength({ min: 1 }).escape(),
+  body('lastName').trim().isLength({ min: 1 }).escape(),
+  body('course').trim().isLength({ min: 1 }).escape(),
+  body('address').trim().isLength({ min: 1 }).escape(),
+  body('badgeNumber').trim().isLength({ min: 1 }).escape(),
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.error("Validation errors:", errors.array());
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  // Sanitize user input to prevent XSS attacks
+  const sanitizedBody = {
+    studentId: req.body.studentId,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    course: req.body.course,
+    address: req.body.address,
+    badgeNumber: req.body.badgeNumber
+  };
+
+  const newStudent = new Student(sanitizedBody);
+
   try {
     // save the generated filename in our MongoDB Atlas database
     newStudent.imagePic = req.file.path;
     const savedStudent = await newStudent.save();
+    console.log("Student saved:", savedStudent);
     res.status(200).json(savedStudent);
   } catch (error) {
-    res.status(500).json({ error: error });
+    console.error("Error saving student:", error);
+    res.status(500).json({ error: error.message || "An error occurred while saving the student" });
   }
 });
 
-// Get Student list or Search Student by rfid or studentid query parameters
+// Get Student list or Search Student by badgeNumber or studentid query parameters
 router.get("/", async (req, res) => {
   const studentId = req.query.studentId;
-  const rfId = req.query.rfId;
+  const badgeNumber = req.query.badgeNumber;
 
-  // if either studenId or rfId query parameters is present
-  if (studentId || rfId) {
+  // if either studenId or badgeNumber query parameters is present
+  if (studentId || badgeNumber) {
     try {
       let student;
-      if (studentId && rfId) {
+      if (studentId && badgeNumber) {
+        // Mongoose handles parameterized queries here
         student = await Student.find({
           studentId: studentId,
-          rfidBadgeNumber: rfId,
+          badgeNumber: badgeNumber,
         });
       } else if (studentId) {
+        // Mongoose handles parameterized queries here
         student = await Student.find({ studentId });
-      } else if (rfId) {
-        student = await Student.find({ rfidBadgeNumber: rfId });
+      } else if (badgeNumber) {
+        // Mongoose handles parameterized queries here
+        student = await Student.find({ badgeNumber: badgeNumber });
       }
       return res.status(200).json(student);
     } catch (error) {
@@ -86,6 +128,7 @@ router.get("/", async (req, res) => {
 // Get Student by ID
 router.get("/:id", async (req, res) => {
   try {
+    // Mongoose handles parameterized queries here
     const student = await Student.findById(req.params.id);
     res.status(200).json(student);
   } catch (error) {
@@ -94,7 +137,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update Student
-router.put("/:id", upload.single("file"), async (req, res, next) => {
+router.put("/:id", limiter, upload.single("file"), async (req, res, next) => {
   //If a new profile pic is uploaded then process it first by deleting the old image file from disk
   if (req.file) {
     try {
@@ -120,6 +163,7 @@ router.put("/:id", upload.single("file"), async (req, res, next) => {
   }
   // Update the database with new details
   try {
+    // Mongoose handles parameterized queries here
     const updatedStudent = await Student.findByIdAndUpdate(
       req.params.id,
       {
@@ -137,6 +181,7 @@ router.put("/:id", upload.single("file"), async (req, res, next) => {
 // Delete Student
 router.delete("/:id", async (req, res) => {
   try {
+    // Mongoose handles parameterized queries here
     await Student.findByIdAndDelete(req.params.id);
     res.status(200).json("Student has been deleted...");
   } catch (error) {

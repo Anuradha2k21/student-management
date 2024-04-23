@@ -31,14 +31,14 @@ export default function Home() {
   };
 
   // function called to search for student
-  const searchStudent = async (studentId, rfId) => {
+  const searchStudent = async (studentId, badgeNumber) => {
     let url;
-    if (studentId && rfId) {
-      url = `http://localhost:5000/api/students?studentId=${studentId}&rfId=${rfId}`;
+    if (studentId && badgeNumber) {
+      url = `http://localhost:5000/api/students?studentId=${studentId}&badgeNumber=${badgeNumber}`;
     } else if (studentId) {
       url = `http://localhost:5000/api/students?studentId=${studentId}`;
-    } else if (rfId) {
-      url = `http://localhost:5000/api/students?rfId=${rfId}`;
+    } else if (badgeNumber) {
+      url = `http://localhost:5000/api/students?badgeNumber=${badgeNumber}`;
     }
     const res = await axios.get(url);
     setStudents(res.data);
